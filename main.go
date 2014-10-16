@@ -3,11 +3,19 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"net"
 	"net/textproto"
 	"os"
 	"strings"
 )
+
+type Bot struct {
+	conn            *textproto.Conn
+	server, channel string
+	port            int16
+}
+
+func NewBot(server, port, channel, nick, username) {
+}
 
 func ListenToMessage(conn *textproto.Conn, done chan bool) {
 	for {
@@ -38,15 +46,13 @@ func SendUserInput(conn *textproto.Conn) {
 func main() {
 	done := make(chan bool)
 	fmt.Println("Connecting to freenode")
-	conn, err := net.Dial("tcp", "irc.freenode.net:6667")
+	new_conn, err := textproto.Dial("tcp", "irc.freenode.net:6667")
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer conn.Close()
-	new_conn := textproto.NewConn(conn)
+	defer new_conn.Close()
 	go ListenToMessage(new_conn, done)
 
-	new_conn.PrintfLine(":Macha!~macha@unaffiliated/macha PRIVMSG #botwar :Test response")
 	new_conn.PrintfLine("NICK ragsagar1")
 	new_conn.PrintfLine("USER ragsagar1 0 * :Bot")
 
